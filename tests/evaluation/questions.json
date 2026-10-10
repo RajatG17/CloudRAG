@@ -1,0 +1,14 @@
+[
+  {
+    "question": "How are duplicate payments prevented?",
+    "expected_source": "payment-architecture.txt"
+  },
+  {
+    "question": "What happens after retries are exhausted?",
+    "expected_source": "payment-architecture.txt"
+  },
+  {
+    "question": "How is operational monitoring performed?",
+    "expected_source": "payment-architecture.txt"
+  }
+]
