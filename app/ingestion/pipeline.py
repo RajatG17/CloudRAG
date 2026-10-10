@@ -64,6 +64,8 @@ def process_document(file_path: Path, chunk_size: int = 900, overlap: int = 150)
                 "page": page_number,
                 "chunk_index": chunk_index,
                 "tenant_id": "demo",
+                "content_sha256": document_hash,
+                "embedding_model": MODEL_NAME,
                 "text": text,
             })
             
