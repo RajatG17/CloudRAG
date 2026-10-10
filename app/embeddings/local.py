@@ -18,7 +18,7 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
     embeddings = model.encode(texts, batch_size=16, 
                               normalize_embeddings=True, 
                               show_progress_bar=False,
-                              )
+                            )
     return embeddings.tolist()
 
 
