@@ -32,9 +32,7 @@ def generate_node(state: RAGState) -> dict:
     
     if not contexts:
         return {
-            "answer": {
-                "I could not find relevant information in the indexed documents."
-            }
+            "answer": "I could not find relevant information in the indexed documents."
         }
     
     context_parts = []

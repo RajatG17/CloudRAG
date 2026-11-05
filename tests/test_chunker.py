@@ -1,7 +1,5 @@
-from app.ingestion.chunker import (
-    chunk_text,
-    normalize_text
-)
+from app.ingestion.chunker import chunk_text, normalize_text
+
 
 def test_normalize_text():
     

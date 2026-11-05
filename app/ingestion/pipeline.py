@@ -44,7 +44,7 @@ def process_document(file_path: Path, chunk_size: int = 900, overlap: int = 150)
     
     for page_number, page_text in pages:
         
-        page_chunks = chunk_text(page_text)
+        page_chunks = chunk_text(page_text, chunk_size, overlap)
         
         for chunk_index, text in enumerate(page_chunks):
             identifier = (
