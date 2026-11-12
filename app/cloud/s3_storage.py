@@ -88,7 +88,7 @@ class S3DocumentStorage:
         self.client = session.client("s3")
         
     @staticmethod
-    def _validate_Key(
+    def _validate_key(
         key: str,
         tenant_id: str,
     ) -> None:
@@ -115,6 +115,7 @@ class S3DocumentStorage:
         Returns:
             UploadResult: An object containing details of the upload operation.
         """
+        
         validate_tenant_id(tenant_id)
         
         file_path = Path(file_path)
@@ -130,8 +131,7 @@ class S3DocumentStorage:
         if file_path.stat().st_size==0 or file_path.stat().st_size > MAX_FILE_SIZE:
             raise ValueError(f"File size must be between 1 and {MAX_FILE_SIZE} bytes")
         
-        with file_path.open("rb") as f:
-            data = f.read()
+        data = file_path.read_bytes()
         
         sha256_hash = calculate_sha256(data)
         
@@ -142,7 +142,8 @@ class S3DocumentStorage:
         )
         
         content_type = (
-            mimetypes.guess_type(file_path.name)[0] or "application/octet-stream"
+            mimetypes.guess_type(file_path.name)[0] 
+            or "application/octet-stream"
         )
         
         try:
@@ -159,16 +160,13 @@ class S3DocumentStorage:
                 ChecksumAlgorithm="SHA256",
             )
             
-            version_id = response.get("VersionId")
-            
             return UploadResult(
                 bucket=self.bucket,
                 key=object_key,
                 sha256=sha256_hash,
-                version_id=version_id,
+                version_id=response.get("VersionId"),
                 status="uploaded",
-            )
-            
+            )   
         except ClientError as e:
             
             code = e.response["Error"]["Code"]
@@ -205,32 +203,30 @@ class S3DocumentStorage:
         Returns:
             dict: A dictionary containing the document's metadata.
         """
-        self._validate_Key(key, tenant_id)
-        
-        try:
-            response = self.client.head_object(
-                Bucket=self.bucket,
-                Key=key,
+        self._validate_key(key, tenant_id)
+
+        response = self.client.head_object(
+            Bucket=self.bucket,
+            Key=key,
+        )
+
+        metadata = response.get("Metadata", {})
+
+        if metadata.get("tenant_id") != tenant_id:
+            raise ValueError(
+                "Tenant metadata does not match"
             )
-            
-            metadata = response.get("Metadata", {})
-            
-            return {
-                    "key": key,
-                    "size_bytes": response.get("ContentLength"),
-                    "content_type": response.get("ContentType"),
-                    "sha256": metadata.get("sha256"),
-                    "version_id": response.get("VersionId"),
-                    "encryption": response.get("ServerSideEncryption"),
-                    }
-            
-        except ClientError as e:
-            code = e.response["Error"]["Code"]
-            
-            if code == "404":
-                raise FileNotFoundError(f"Object not found: {key}")
-            
-            raise
+
+        return {
+            "key": key,
+            "size_bytes": response["ContentLength"],
+            "content_type": response.get("ContentType"),
+            "sha256": metadata.get("sha256"),
+            "version_id": response.get("VersionId"),
+            "encryption": response.get(
+                "ServerSideEncryption"
+            ),
+        }
         
     def download_document(
         self,
@@ -248,7 +244,7 @@ class S3DocumentStorage:
         Returns:
             Path: The local path where the file was saved.
         """
-        self._validate_Key(key, tenant_id)
+        self._validate_key(key, tenant_id)
         
         metadata = self.get_document_metadata(key, tenant_id)
         
@@ -266,10 +262,10 @@ class S3DocumentStorage:
         os.close(fd)
         
         try:
-            extra_args = []
+            extra_args = {}
             
             if metadata["version_id"]:
-                extra_args.append({"VersionId": metadata["version_id"]})
+                extra_args["VersionId"]=metadata["version_id"]
             
             self.client.download_file(
                 self.bucket,
@@ -287,10 +283,10 @@ class S3DocumentStorage:
                     "Downloaded file hash mismatch"
                 )
                 
-                os.replace(
-                    temp_name,
-                    destination,
-                )
+            os.replace(
+                temp_name,
+                destination,
+            )
                 
         finally:
             Path(temp_name).unlink(missing_ok=True)
