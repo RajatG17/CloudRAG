@@ -1,9 +1,7 @@
-import os 
-
+import os
 from functools import lru_cache
 
 import boto3
-
 from botocore.config import Config
 from dotenv import load_dotenv
 
