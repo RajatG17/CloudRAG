@@ -1,0 +1,21 @@
+[
+  {
+    "Rules": [
+      {
+        "ResourceType": "index",
+        "Resource": [
+          "index/cloudrag-vectors-dev/knowledge-chunks-v1"
+        ],
+        "Permission": [
+          "aoss:CreateIndex",
+          "aoss:DescribeIndex",
+          "aoss:ReadDocument",
+          "aoss:WriteDocument"
+        ]
+      }
+    ],
+    "Principal": [
+      "arn:aws:iam::032844082636:user/cloudrag-dev"
+    ]
+  }
+]

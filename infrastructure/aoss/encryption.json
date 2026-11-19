@@ -1,0 +1,11 @@
+{
+  "Rules": [
+    {
+      "ResourceType": "collection",
+      "Resource": [
+        "collection/cloudrag-vectors-dev"
+      ]
+    }
+  ],
+  "AWSOwnedKey": true
+}

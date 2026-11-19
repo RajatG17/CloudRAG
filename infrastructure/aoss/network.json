@@ -1,0 +1,14 @@
+[
+  {
+    "Description": "Temporary public API access for local development",
+    "Rules": [
+      {
+        "ResourceType": "collection",
+        "Resource": [
+          "collection/cloudrag-vectors-dev"
+        ]
+      }
+    ],
+    "AllowFromPublic": true
+  }
+]
