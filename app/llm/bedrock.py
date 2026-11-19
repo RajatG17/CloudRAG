@@ -23,12 +23,22 @@ Keep answers clear, factual, and concise.
 
 @dataclass(frozen=True)
 class GenerationResult:
+    text: str
+    model_id: str
+    input_tokens: str
+    output_tokens: str
+    server_latency_ms: float
+    client_latency_ms: float
+    stop_reason: str
+    request_id: str | None
+    
+class BedrockGenerationProvider:
     
     def __init__(
         self, 
         client: Any,
-        model_id: str | None,
-        max_tokens: int | None,
+        model_id: str | None = None,
+        max_tokens: int | None = None,
     ):
         
         self.client = client
@@ -51,89 +61,89 @@ class GenerationResult:
         if self.max_tokens <= 0:
             raise ValueError("max_tokens must be positive")
         
-def generate(
-    self, 
-    prompt: str,
-) -> GenerationResult:
-    
-    if not isinstance(prompt, str) or not prompt.strip():
-        raise ValueError("Generation prompt must be non-empty")
-    
-    start = time.perf_counter()
-    
-    response = self.client.converse(
-        modelId=self.model_id,
-        system=[
-            {
-                "text": SYSTEM_PROMPT
-            }
-        ],
-        messages = [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "text": prompt
-                    }
-                ],
-            }
-        ],
-        inferenceConfig={
-            "maxTokens": self.max_tokens,
-            "temperature": 0.0,
-        },
-    )
-    
-    client_latency_ms = (
-        time.perf_counter() - start
-
-    )
-    
-    content_blocks = (
-        response["output"]["message"]["content"]
-    )
-    
-    text = "\n".join(
-        block["text"]
-        for block in content_blocks
-        if "text" in block
-    ).strip()
-    
-    if not text:
-        raise RuntimeError(
-            "Bedrock returned no text content"
+    def generate(
+        self, 
+        prompt: str,
+    ) -> GenerationResult:
+        
+        if not isinstance(prompt, str) or not prompt.strip():
+            raise ValueError("Generation prompt must be non-empty")
+        
+        start = time.perf_counter()
+        
+        response = self.client.converse(
+            modelId=self.model_id,
+            system=[
+                {
+                    "text": SYSTEM_PROMPT
+                }
+            ],
+            messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "text": prompt
+                        }
+                    ],
+                }
+            ],
+            inferenceConfig={
+                "maxTokens": self.max_tokens,
+                "temperature": 0.0,
+            },
         )
-    
-    usage = response.get("usage", {})
-    metrics = response.get("metrics", {})
-    
-    return GenerationResult(
-        text=text,
-        model_id=self.model_id,
-        input_tokens=usage.get(
-            "inputTokens",
-            0,
-        ),
-        output_token=usage.get(
-            "outputTokens",
-            0,
-        ),
-        server_latency_ms=metrics.get(
-           "latencyMs",
-           0 
-        ),
-        client_latency_ms=round(
-            client_latency_ms, 2
-        ),
-        stop_reason=response.get(
-            "stopReason",
-            "unknown",
-        ),
-        request_id = response.get(
-            "ResponseMetadata", {}
-        ).get("RequestId", None),
         
+        client_latency_ms = (
+            time.perf_counter() - start
+
+        )
         
-    )
+        content_blocks = (
+            response["output"]["message"]["content"]
+        )
+        
+        text = "\n".join(
+            block["text"]
+            for block in content_blocks
+            if "text" in block
+        ).strip()
+        
+        if not text:
+            raise RuntimeError(
+                "Bedrock returned no text content"
+            )
+        
+        usage = response.get("usage", {})
+        metrics = response.get("metrics", {})
+        
+        return GenerationResult(
+            text=text,
+            model_id=self.model_id,
+            input_tokens=usage.get(
+                "inputTokens",
+                0,
+            ),
+            output_tokens=usage.get(
+                "outputTokens",
+                0,
+            ),
+            server_latency_ms=metrics.get(
+            "latencyMs",
+            0 
+            ),
+            client_latency_ms=round(
+                client_latency_ms, 2
+            ),
+            stop_reason=response.get(
+                "stopReason",
+                "unknown",
+            ),
+            request_id = response.get(
+                "ResponseMetadata", {}
+            ).get("RequestId", None),
+            
+            
+        )
 
 

@@ -53,7 +53,7 @@ class BedrockEmbeddingProvider:
         
         if not isinstance(text, str) or not text.strip():
             raise ValueError(
-                "EMbeding input must be non-empty text"
+                "Embedding input must be non-empty text"
             )
             
         if len(text) > 50_000:
@@ -71,7 +71,7 @@ class BedrockEmbeddingProvider:
         response = self.client.invoke_model(
             modelId=self.model_id,
             contentType="application/json",
-            accept="appliation/json",
+            accept="application/json",
             body=json.dumps(payload),
         )
         
@@ -105,7 +105,7 @@ class BedrockEmbeddingProvider:
             model_id=self.model_id,
             dimensions=len(vector),
             input_tokens=body.get(
-                "inputTokenCOunt",
+                "inputTextTokenCount",
                 0
             ),
             latency_ms=round(latency_ms, 2),

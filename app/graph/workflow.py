@@ -1,15 +1,19 @@
 from typing import TypedDict
 
-from langgraph.graph import StateGraph, START, END
+from langgraph.graph import END, START, StateGraph
 
+from app.llm.provider import (
+    generate_with_provider,
+)
 from app.retrieval.chroma_store import get_context
-from app.llm.ollama import generate_response
+
 
 class RAGState(TypedDict, total=False):
     
     question: str
     contexts: list[dict]
     answer: str
+    generation_metrics: dict
     
 def retrieve_node(state: RAGState, k=5) -> dict:
     
@@ -66,10 +70,12 @@ def generate_node(state: RAGState) -> dict:
 
             ANSWER:
             """
-    answer = generate_response(prompt=prompt)
+    generation = generate_with_provider(prompt=prompt)
     
     return {
-        "answer" : answer
+        "answer" : generation["text"],
+        "generation_metrics": generation["metadata"],
+        
     }
     
 def build_graph():

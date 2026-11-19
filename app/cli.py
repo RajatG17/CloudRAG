@@ -34,6 +34,17 @@ def main():
         
         print("\n\n")
         
+        metrics = result.get(
+            "generation_metrics", 
+            {}
+        )
+        
+        if metrics:
+            print("\nGeneration metrics")
+            
+            for key, val in metrics.items():
+                print(f"{key}: {val}")
+        
 
 if __name__ == "__main__":
     main()
