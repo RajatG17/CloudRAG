@@ -5,7 +5,7 @@ from langgraph.graph import END, START, StateGraph
 from app.llm.provider import (
     generate_with_provider,
 )
-from app.retrieval.chroma_store import get_context
+from app.retrieval.provider import get_context
 
 
 class RAGState(TypedDict, total=False):

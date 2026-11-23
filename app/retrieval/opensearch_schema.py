@@ -1,10 +1,10 @@
-INDEX_NAME = "knowledge-chunks-v1"
+INDEX_NAME = "knowledge-chunks-v2"
 
 EMBEDDING_DIMENSIONS = 512
 
 CHUNKER_VERSION = "char-900-overlap-150-v1"
 
-def build_index_mapping() -> int:
+def build_index_mapping() -> dict:
     
     return {
         "settings": {
@@ -46,7 +46,7 @@ def build_index_mapping() -> int:
                     "type": "integer",
                 },
                 "chunker_version": {
-                    "type": "version",
+                    "type": "keyword",
                 },
                 "embedding_model": {
                     "type": "keyword",
