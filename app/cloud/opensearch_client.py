@@ -62,8 +62,12 @@ def get_opensearch_client() -> OpenSearch:
         use_ssl=True,
         verify_certs=True,
         connection_class=RequestsHttpConnection,
-        timeout=90,
-        max_retries=2,
-        retry_on_timeout=True,
+        timeout=int(
+            os.getenv("AOSS_TIMEOUT_SECONDS", "90")
+        ),
+        max_retries=int(
+            os.getenv("AOSS_MAX_RETRIES", "2")
+        ),
+        retry_on_timeout=False,
         pool_maxsize=10,
     )

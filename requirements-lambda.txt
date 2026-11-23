@@ -1,0 +1,10 @@
+fastapi
+mangum
+langgraph
+boto3
+opensearch-py
+requests
+python-dotenv
+uvicorn
+httpx
+pytest

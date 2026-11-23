@@ -1,28 +1,21 @@
 import os
 from functools import lru_cache
 
-from app.retrieval.opensearch_store import (
-    OpenSearchVectorStore,
-)
-
-from app.retrieval.chroma_store import (
-    get_context as get_local_context,
-)
-
-from app.cloud.bedrock_client import (
-    get_bedrock_runtime_client,
-)
-
-from app.cloud.opensearch_client import (
-    get_opensearch_client,
-)
-
-from app.embeddings.bedrock import (
-    BedrockEmbeddingProvider,
-)
-
 @lru_cache(maxsize=1)
 def get_cloud_store():
+    
+    from app.cloud.bedrock_client import (
+        get_bedrock_runtime_client,
+    )
+    from app.cloud.opensearch_client import (
+        get_opensearch_client,
+    )
+    from app.embeddings.bedrock import (
+        BedrockEmbeddingProvider,
+    )
+    from app.retrieval.opensearch_store import (
+        OpenSearchVectorStore,
+    )
 
     embedder = BedrockEmbeddingProvider(
         client=get_bedrock_runtime_client(),
@@ -47,6 +40,10 @@ def get_context(
     ).lower()
 
     if backend == "chroma":
+
+        from app.retrieval.chroma_store import (
+    get_context as get_local_context,
+)
 
         return get_local_context(
             query=query,

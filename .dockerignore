@@ -1,0 +1,15 @@
+.git/
+.venv/
+.env
+.env.*
+.aws/
+data/
+tests/
+infrastructure/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.pem
+*.key
+*.tfstate
+*.tfstate.*

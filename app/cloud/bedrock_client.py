@@ -20,12 +20,16 @@ def get_bedrock_runtime_client():
     )
     
     config = Config(
-        connect_timeout=5,
-        read_timeout=90,
+        connect_timeout=3,
+        read_timeout=int(
+            os.getenv("BEDROCK_READ_TIMEOUT_SECONDS", "90")
+        ),
         
         retries = {
             "mode": "standard", 
-            "total_max_attempts": 3,
+            "total_max_attempts": int(
+                os.getenv("BEDROCK_TOTAL_ATTEMPTS", "3")
+            ),
         },
         max_pool_connections=10,
     )

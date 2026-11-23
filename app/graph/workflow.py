@@ -11,17 +11,20 @@ from app.retrieval.provider import get_context
 class RAGState(TypedDict, total=False):
     
     question: str
+    tenant_id: str
+    top_k: int
     contexts: list[dict]
     answer: str
     generation_metrics: dict
     
-def retrieve_node(state: RAGState, k=5) -> dict:
+def retrieve_node(state: RAGState) -> dict:
     
     question = state["question"]
     
     contexts = get_context(
         query=question,
-        k=k,
+        k=state.get("top_k", 5),
+        tenant_id=state["tenant_id"],
     )
     
     return {
